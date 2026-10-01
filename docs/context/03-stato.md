@@ -3,6 +3,7 @@
 Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fatti e non narrazione.
 
 ## Versioni installate
+
 - Node 22.23.3, npm 10.9.9
 - Expo SDK 57.0.26, React Native 0.86.3, React 19.2.3
 - Expo Router 57.0.24, TypeScript 6.0.3
@@ -10,6 +11,7 @@ Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fa
 - Jest 29.7, jest-expo 57, Testing Library React Native 13.3
 
 ## Step completati
+
 - Step 1 — scaffold Expo Router TypeScript con tab Spese e Riepilogo
 - Step 2 — database SQLite, migrazioni, repository e utility money/date
 - Step 3 — elenco spese raggruppato e form nuova spesa
@@ -21,6 +23,7 @@ Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fa
 - Step 9 — README italiano e rifinitura accessibilità delle azioni principali
 
 ## Decisioni prese
+
 - Testi visibili centralizzati in `src/constants/strings.ts`.
 - I repository ricevono `SQLiteDatabase` come parametro per facilitare i test con mock.
 - Il form usa React Hook Form con resolver Zod; gli importi vengono convertiti in centesimi prima del repository.
@@ -29,8 +32,10 @@ Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fa
 - I grafici ricevono dati già aggregati e adattano la larghezza alla finestra.
 - Le foto vengono copiate in `Paths.document/receipts`; sostituzione e cancellazione rimuovono i file precedenti.
 - L'OCR usa `ReceiptTextExtractor`, timeout di 20 secondi e precompila solo importo, data e negozio; la conferma resta manuale.
+- Il riepilogo usa uno scroll verticale; il parser preferisce totali espliciti e supporta importi sulle righe OCR adiacenti.
 
 ## Dipendenze aggiunte (pacchetto — motivo)
+
 - `jest`, `jest-expo`, `@testing-library/react-native` — test dello scaffold
 - `@types/jest` — tipi TypeScript per i test
 - `prettier` — formattazione del codice
@@ -43,6 +48,7 @@ Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fa
 - `expo-dev-client` — esecuzione di moduli nativi personalizzati al posto di Expo Go.
 
 ## Problemi aperti / debito tecnico
+
 - Verifica su dispositivo del primo avvio SQLite ancora da fare.
 - Verifica su dispositivo dell'inserimento e del raggruppamento per giorno ancora da fare.
 - Playwright Web ha verificato creazione, precompilazione e modifica; `Alert.alert` non è automatizzabile su Web.
@@ -50,8 +56,10 @@ Regola: modifica solo queste sezioni, tieni il file sotto le 80 righe, scrivi fa
 - Expo Web con SQLite fallisce per `NoModificationAllowedError` su File System Access; verifica grafica Web bloccata dal supporto SQLite Web alpha.
 - ADB 34.0.5, Android Studio Quail 4, SDK Platform/Build Tools 36, NDK 27.1.12297006 e CMake 3.22.1 installati; `ANDROID_HOME` punta a `~/Android/Sdk`.
 - `./gradlew assembleDebug` completato; APK development generato in `android/app/build/outputs/apk/debug/app-debug.apk` (309 MB).
-- `adb devices` non rileva dispositivi; verifica Samsung S24 di SQLite, fotocamera, galleria e OCR ancora da fare.
+- Samsung S24 rilevato via ADB; APK development installato e avviato. Verifiche manuali di SQLite, fotocamera, galleria e OCR ancora da fare.
+- Verificare il parser aggiornato su scontrini reali; la qualità dei suggerimenti dipende anche dal testo riconosciuto da ML Kit.
 - Misurare la dimensione della build release: il modulo ML Kit include più script OCR, mentre l'app usa il latino.
 
 ## Prossimo step
+
 Step 10 — preparazione colloquio; collegare il Samsung S24 e verificare l'app development, in particolare foto e OCR.

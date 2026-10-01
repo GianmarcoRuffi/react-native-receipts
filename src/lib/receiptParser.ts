@@ -5,14 +5,22 @@ export type ReceiptParseResult = {
   confidence: number;
 };
 
-function parseAmount(line: string): number | undefined {
-  const match = line.match(/(?:^|[^\dA-Za-zÀ-ÿ])(\d{1,3}(?:[ .]\d{3})+|\d+)(?:([,.])(\d{1,2}))?(?!\d)/);
-  if (!match) return undefined;
+const AMOUNT_PATTERN =
+  /(?:^|[^\d])(\d{1,3}(?:[ .]\d{3})+|\d+)(?:([,.])(\d{1,2}))?(?!\d)/g;
+const TOTAL_LABEL_PATTERN = /\b(?:TOTALE|TOT\.?|IMPORTO\s+PAGATO)\b/;
+const EXCLUDED_TOTAL_PATTERN = /\b(?:SUBTOTALE|RESTO|ACCONTO)\b/;
+const MERCHANT_NOISE_PATTERN =
+  /\b(?:DOCUMENTO\s+COMMERCIALE|SCONTRINO|P\.?\s*IVA|PARTITA\s+IVA|CODICE\s+FISCALE|DESCRIZIONE|QUANTIT[AÀ]|PREZZO|PAGAMENTO|CONTANTE|BANCOMAT|SUBTOTALE|RESTO|TOTALE|IMPORTO)\b/i;
 
-  const euros = Number(match[1].replace(/[ .]/g, ''));
-  const cents = Number((match[3] ?? '').padEnd(2, '0'));
-  const amount = euros * 100 + cents;
-  return amount > 0 ? amount : undefined;
+function parseAmount(line: string): number | undefined {
+  for (const match of line.matchAll(AMOUNT_PATTERN)) {
+    const euros = Number(match[1].replace(/[ .]/g, ''));
+    const cents = Number((match[3] ?? '').padEnd(2, '0'));
+    const amount = euros * 100 + cents;
+    if (amount > 0) return amount;
+  }
+
+  return undefined;
 }
 
 function parseDate(text: string): string | undefined {
@@ -30,24 +38,68 @@ function parseDate(text: string): string | undefined {
 
 /** Uses the last valid total-labeled amount and first non-total alphabetic line as merchant; confidence weights total/date/merchant as 0.6/0.25/0.15. */
 export function parseReceiptText(text: string): ReceiptParseResult {
-  const lines = text.split(/\r?\n/).map((line) => line.trim()).filter(Boolean);
-  let totalCents: number | undefined;
+  const lines = text
+    .split(/\r?\n/)
+    .map((line) => line.trim())
+    .filter(Boolean);
+  const totals: { amount: number; priority: number; index: number }[] = [];
 
   for (let index = 0; index < lines.length; index += 1) {
     const normalizedLine = lines[index].toUpperCase().replace(/0/g, 'O');
-    if (/\b(?:SUBTOTALE|RESTO)\b/.test(normalizedLine)) continue;
-    if (!/\b(?:TOTALE(?:\s+EURO)?|IMPORTO\s+PAGATO)\b/.test(normalizedLine)) continue;
+    if (EXCLUDED_TOTAL_PATTERN.test(normalizedLine)) continue;
+    const label = TOTAL_LABEL_PATTERN.exec(normalizedLine);
+    if (!label) continue;
 
-    const candidate = parseAmount(lines[index]) ?? parseAmount(lines[index + 1] ?? '');
-    if (candidate !== undefined) totalCents = candidate;
+    let amount = parseAmount(lines[index].slice(label.index + label[0].length));
+    for (
+      let offset = 1;
+      amount === undefined && offset <= 2 && index + offset < lines.length;
+      offset += 1
+    ) {
+      const followingLine = lines[index + offset]
+        .toUpperCase()
+        .replace(/0/g, 'O');
+      if (
+        EXCLUDED_TOTAL_PATTERN.test(followingLine) ||
+        TOTAL_LABEL_PATTERN.test(followingLine)
+      )
+        break;
+      amount = parseAmount(lines[index + offset]);
+    }
+
+    if (amount !== undefined) {
+      const priority = /\b(?:DA\s+PAGARE|COMPLESSIVO|DOCUMENTO)\b/.test(
+        normalizedLine,
+      )
+        ? 3
+        : /\bIMPORTO\s+PAGATO\b/.test(normalizedLine)
+          ? 1
+          : 2;
+      totals.push({ amount, priority, index });
+    }
   }
 
+  const total = totals.reduce<
+    { amount: number; priority: number; index: number } | undefined
+  >(
+    (best, candidate) =>
+      !best ||
+      candidate.priority > best.priority ||
+      (candidate.priority === best.priority && candidate.index > best.index)
+        ? candidate
+        : best,
+    undefined,
+  );
+  const totalCents = total?.amount;
   const date = parseDate(text);
-  const merchant = lines.find((line) => (
-    /[A-Za-zÀ-ÿ]/.test(line)
-    && !/\b(?:T[O0]TALE|SUBTOTALE|RESTO|IMPORTO\s+PAGATO)\b/i.test(line)
-  ));
-  const confidence = (totalCents ? 0.6 : 0) + (date ? 0.25 : 0) + (merchant ? 0.15 : 0);
+  const merchant = lines.find(
+    (line) =>
+      /[A-Za-zÀ-ÿ]/.test(line) &&
+      !MERCHANT_NOISE_PATTERN.test(line) &&
+      !parseDate(line),
+  );
+  const confidence =
+    (totalCents ? 0.6 : 0) + (date ? 0.25 : 0) + (merchant ? 0.15 : 0);
 
   return {
     ...(totalCents ? { totalCents } : {}),

@@ -20,7 +20,13 @@ jest.mock('@/src/features/summary/useMonthlySummary', () => ({
       totalCents: 3500,
       comparison: { differenceCents: 500, percentage: 16.7 },
       categoryTotals: [
-        { categoryId: 1, name: 'Alimentari', color: '#4F7CAC', totalCents: 3500, share: 100 },
+        {
+          categoryId: 1,
+          name: 'Alimentari',
+          color: '#4F7CAC',
+          totalCents: 3500,
+          share: 100,
+        },
       ],
     },
   }),
@@ -33,7 +39,14 @@ describe('summary screen', () => {
     expect(screen.getAllByText('35,00 €')).toHaveLength(2);
     expect(screen.getAllByText('Alimentari')).toHaveLength(2);
     expect(screen.getAllByText('100,0 %')).toHaveLength(2);
-    expect(screen.getByRole('button', { name: 'Mese precedente' })).toBeTruthy();
-    expect(screen.getByRole('button', { name: 'Mese successivo' })).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: 'Mese precedente' }),
+    ).toBeTruthy();
+    expect(
+      screen.getByRole('button', { name: 'Mese successivo' }),
+    ).toBeTruthy();
+    expect(
+      screen.getByTestId('summary-scroll').props.contentContainerStyle,
+    ).toEqual(expect.objectContaining({ flexGrow: 1 }));
   });
 });
