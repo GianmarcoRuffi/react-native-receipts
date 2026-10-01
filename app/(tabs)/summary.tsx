@@ -43,9 +43,9 @@ export default function SummaryScreen() {
       <View style={styles.heading}>
         <Text style={styles.title}>{tabLabels.summary}</Text>
         <View style={styles.monthControls}>
-          <Button title="<" onPress={() => setMonth(shiftMonth(month, -1))} variant="secondary" />
+          <Button accessibilityLabel={summaryText.previousMonth} title="<" onPress={() => setMonth(shiftMonth(month, -1))} variant="secondary" />
           <Text accessibilityRole="header" style={styles.month}>{formatMonth(month)}</Text>
-          <Button title=">" onPress={() => setMonth(shiftMonth(month, 1))} variant="secondary" disabled={!canGoNext} />
+          <Button accessibilityLabel={summaryText.nextMonth} title=">" onPress={() => setMonth(shiftMonth(month, 1))} variant="secondary" disabled={!canGoNext} />
         </View>
       </View>
 

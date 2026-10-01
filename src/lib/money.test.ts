@@ -1,4 +1,4 @@
-import { formatCents, parseEuroToCents } from './money';
+import { formatCents, formatCentsForInput, parseEuroToCents } from './money';
 
 describe('parseEuroToCents', () => {
   it('accepts comma and point decimals', () => {
@@ -14,5 +14,12 @@ describe('parseEuroToCents', () => {
 describe('formatCents', () => {
   it('formats euros with two decimal places', () => {
     expect(formatCents(1250)).toBe('12,50 €');
+  });
+});
+
+describe('formatCentsForInput', () => {
+  it('formats cents as an editable decimal amount without a currency suffix', () => {
+    expect(formatCentsForInput(1250)).toBe('12,50');
+    expect(formatCentsForInput(5)).toBe('0,05');
   });
 });

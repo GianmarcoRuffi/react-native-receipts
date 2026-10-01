@@ -5,6 +5,7 @@ import { theme } from '@/src/constants/theme';
 type ButtonProps = {
   title: string;
   onPress: () => void;
+  accessibilityLabel?: string;
   disabled?: boolean;
   loading?: boolean;
   variant?: 'primary' | 'secondary';
@@ -13,6 +14,7 @@ type ButtonProps = {
 export function Button({
   title,
   onPress,
+  accessibilityLabel,
   disabled = false,
   loading = false,
   variant = 'primary',
@@ -22,6 +24,7 @@ export function Button({
   return (
     <Pressable
       accessibilityRole="button"
+      accessibilityLabel={accessibilityLabel}
       disabled={disabled || loading}
       onPress={onPress}
       style={({ pressed }) => [

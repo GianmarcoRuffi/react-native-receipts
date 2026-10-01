@@ -25,6 +25,16 @@ export function formatCents(cents: number): string {
   return `${euros},${remainder} €`;
 }
 
+export function formatCentsForInput(cents: number): string {
+  if (!Number.isSafeInteger(cents) || cents < 0) {
+    throw new Error('Invalid cents amount');
+  }
+
+  const euros = Math.floor(cents / 100);
+  const remainder = String(cents % 100).padStart(2, '0');
+  return `${euros},${remainder}`;
+}
+
 export function formatSignedCents(cents: number): string {
   return `${cents >= 0 ? '+' : '-'}${formatCents(Math.abs(cents))}`;
 }

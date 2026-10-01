@@ -10,6 +10,7 @@ import { deleteExpense, getExpense, updateExpense } from '@/src/db/expenses.repo
 import { ExpenseForm } from '@/src/features/expenses/ExpenseForm';
 import type { ExpenseFormValues } from '@/src/features/expenses/schema';
 import { formatCents, parseEuroToCents } from '@/src/lib/money';
+import { deleteReceipt } from '@/src/features/receipt/storage';
 
 export default function EditExpenseScreen() {
   const router = useRouter();
@@ -59,14 +60,14 @@ export default function EditExpenseScreen() {
 
   const currentExpense = expense;
 
-  async function handleSubmit(values: ExpenseFormValues): Promise<void> {
+  async function handleSubmit(values: ExpenseFormValues, receiptUri: string | null): Promise<void> {
     await updateExpense(db, expenseId, {
       amountCents: parseEuroToCents(values.amount),
       categoryId: Number(values.categoryId),
       date: values.date,
       merchant: values.merchant.trim() || null,
       note: values.note.trim() || null,
-      receiptUri: currentExpense.receiptUri,
+      receiptUri,
     });
     router.back();
   }
@@ -78,6 +79,7 @@ export default function EditExpenseScreen() {
         text: expenseText.deleteConfirm,
         style: 'destructive',
         onPress: async () => {
+          await deleteReceipt(currentExpense.receiptUri);
           await deleteExpense(db, expenseId);
           router.back();
         },
@@ -94,6 +96,7 @@ export default function EditExpenseScreen() {
         merchant: currentExpense.merchant ?? '',
         note: currentExpense.note ?? '',
       }}
+      initialReceiptUri={currentExpense.receiptUri}
       onDelete={confirmDelete}
       onSubmit={handleSubmit}
       submitLabel={expenseText.saveChanges}

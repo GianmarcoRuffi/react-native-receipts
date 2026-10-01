@@ -33,6 +33,11 @@ export const expenseText = {
   cancel: 'Annulla',
   notFound: 'La spesa richiesta non esiste.',
   back: 'Torna indietro',
+  receipt: 'Scontrino',
+  addReceipt: 'Aggiungi foto',
+  replaceReceipt: 'Sostituisci',
+  removeReceipt: 'Rimuovi',
+  receiptError: 'Non è stato possibile salvare la foto.',
   amount: 'Importo',
   category: 'Categoria',
   date: 'Data',
@@ -44,6 +49,31 @@ export const expenseText = {
   categoriesError: 'Non è stato possibile caricare le categorie.',
   amountPlaceholder: '0,00',
   amountKeyboardHint: 'Usa la virgola o il punto per i decimali.',
+} as const;
+
+export const receiptText = {
+  title: 'Fotografa scontrino',
+  takePhoto: 'Scatta foto',
+  chooseGallery: 'Scegli dalla galleria',
+  readReceipt: 'Leggi scontrino',
+  readingReceipt: 'Lettura in corso...',
+  suggested: 'Suggerito',
+  suggestionsReady: 'Dati suggeriti: controllali e correggili se necessario.',
+  lowConfidence: 'Lettura incerta: verifica i dati suggeriti.',
+  noTextRecognized: 'Nessun dato leggibile. Prova un’altra foto o inserisci i dati a mano.',
+  readError: 'Lettura non riuscita. Puoi riprovare o inserire i dati a mano.',
+  readTimeout: 'La lettura ha impiegato troppo tempo. Riprova o inserisci i dati a mano.',
+  readUnavailable: 'La lettura dello scontrino non è disponibile su questa piattaforma.',
+  receiptImage: 'Foto scontrino',
+  openPreview: 'Apri anteprima scontrino',
+  closePreview: 'Torna alla spesa dalla foto',
+  cancel: 'Annulla',
+  permissionTitle: 'Permesso fotocamera necessario',
+  permissionMessage: 'Consenti l accesso alla fotocamera per fotografare lo scontrino.',
+  allowCamera: 'Consenti fotocamera',
+  openSettings: 'Apri impostazioni',
+  cameraUnavailable: 'Fotocamera non disponibile su questo dispositivo.',
+  captureError: 'Non è stato possibile salvare la foto.',
 } as const;
 
 export const validationText = {

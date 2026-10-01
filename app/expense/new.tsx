@@ -12,13 +12,14 @@ export default function NewExpenseScreen() {
   const router = useRouter();
   const db = useSQLiteContext();
 
-  async function handleSubmit(values: ExpenseFormValues): Promise<void> {
+  async function handleSubmit(values: ExpenseFormValues, receiptUri: string | null): Promise<void> {
     await createExpense(db, {
       amountCents: parseEuroToCents(values.amount),
       categoryId: Number(values.categoryId),
       date: values.date,
       merchant: values.merchant.trim() || null,
       note: values.note.trim() || null,
+      receiptUri,
     });
     router.back();
   }

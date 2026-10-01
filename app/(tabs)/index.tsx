@@ -54,7 +54,11 @@ export default function TabOneScreen() {
           contentContainerStyle={styles.list}
           keyExtractor={(item) => String(item.id)}
           renderItem={({ item }) => (
-            <Pressable accessibilityRole="button" onPress={() => router.push({ pathname: '/expense/[id]', params: { id: String(item.id) } })}>
+            <Pressable
+              accessibilityRole="button"
+              accessibilityLabel={`${item.merchant || item.categoryName}, ${item.categoryName}, ${formatCents(item.amountCents)}`}
+              onPress={() => router.push({ pathname: '/expense/[id]', params: { id: String(item.id) } })}
+            >
               <Card>
                 <View style={styles.row}>
                   <View style={styles.rowMain}>

@@ -11,6 +11,7 @@
       "supportsTablet": true
     },
     "android": {
+      "package": "com.giammy.scontrini",
       "adaptiveIcon": {
         "backgroundColor": "#E6F4FE",
         "foregroundImage": "./assets/images/android-icon-foreground.png",
@@ -34,7 +35,19 @@
           "backgroundColor": "#ffffff"
         }
       ],
-      "expo-sqlite"
+      "expo-sqlite",
+      [
+        "expo-camera",
+        {
+          "cameraPermission": "Consenti a Scontrini di usare la fotocamera per fotografare lo scontrino."
+        }
+      ],
+      [
+        "expo-image-picker",
+        {
+          "photosPermission": "Consenti a Scontrini di scegliere una foto dello scontrino."
+        }
+      ]
     ],
     "experiments": {
       "typedRoutes": true

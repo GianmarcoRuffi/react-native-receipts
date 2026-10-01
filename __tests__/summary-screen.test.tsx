@@ -33,5 +33,7 @@ describe('summary screen', () => {
     expect(screen.getAllByText('35,00 €')).toHaveLength(2);
     expect(screen.getAllByText('Alimentari')).toHaveLength(2);
     expect(screen.getAllByText('100,0 %')).toHaveLength(2);
+    expect(screen.getByRole('button', { name: 'Mese precedente' })).toBeTruthy();
+    expect(screen.getByRole('button', { name: 'Mese successivo' })).toBeTruthy();
   });
 });
